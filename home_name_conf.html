@@ -1,0 +1,35 @@
+<?php
+	$username = $_COOKIE["username"];
+	require_once("./conection.php");
+	$mysqli = db_connect();
+
+	$sql = "SELECT ".
+			"home_name ".
+			"FROM ".
+			"home_name_table ".
+			"WHERE EXISTS ( ".
+			"SELECT home_name ".
+			"FROM home_name_table ".
+			"WHERE user_name = '".$username."'".
+			")";
+
+	$result = $mysqli->query($sql);
+
+	if(($result -> num_rows)>0){
+		header("Location:http://www.wolfnet-twei.sakura.ne.jp/guild/character_conf.html");
+	}
+?>
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>Insert title here</title>
+<script type="text/javascript" src="./jquery-3.1.1.min.js"></script>
+<script type="text/javascript" src="home_name_conf.js"></script>
+</head>
+<body>
+家名<input type="text">
+<button type = "button">登録</button>
+
+</body>
+</html>

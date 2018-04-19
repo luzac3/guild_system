@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<script type="text/javascript" src="./jquery-3.1.1.min.js"></script>
+<script type="text/javascript" src="new_user.js"></script>
+<title>Insert title here</title>
+</head>
+<body>
+	<form>
+		<div id="main">
+			<p>ユーザー名(半角英数)：<input type="text" id="username" title="半角英数" pattern = "^[0-9A-Za-z]+$" required></p>
+			<div id="user_error"></div>
+
+			<p>ニックネーム：<input type="text" id="nickname"></p>
+			<div id="nick_error"></div>
+
+			<p>パスワード：<input type="password" id="password" title="パスワードは6文字以上の半角英数で入力してください" pattern="^([a-zA-Z0-9]{6,})$" required></p>
+			<div id="pass_error"></div>
+
+			<p>パスワード確認：<input type="password" id="password_check" required></p>
+			<div id="pass_check_error"></div>
+
+			<button type="button" value="login" id="make">登録</button>
+			<button type="button" value="login" id="back">戻る</button>
+
+		</div>
+	</form>
+</body>
+</html>

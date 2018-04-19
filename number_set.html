@@ -1,0 +1,75 @@
+<?php
+
+	if(isset($_COOKIE["username"])){
+		$username = $_COOKIE["username"];
+	}else{
+		header('Location: http://www.wolfnet-twei.sakura.ne.jp/guild/login.html');
+		exit;
+	}
+
+	require_once("./conection.php");
+	$mysqli = db_connect();
+
+	$sql = "SELECT name FROM character_table WHERE user_name = '".$username."'";
+
+	$result = $mysqli -> query($sql);
+
+	if(($result -> num_rows) == 0){
+		header('Location: http://www.wolfnet-twei.sakura.ne.jp/guild/r.html');
+	}
+
+	$character_name_array = array();
+
+	foreach($result as $row){
+		array_push($character_name_array,$row["name"]);
+	}
+
+	$result -> close();
+
+?>
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<meta http-equiv="content-style-type" content="text/css">
+<meta name="robots" content="noindex, nofollow">
+<link rel="stylesheet" href="table_conf.css" type="text/css" media="screen">
+<script type="text/javascript" src="./jquery-3.1.1.min.js"></script>
+<script type="text/javascript" src="number_set.js"></script>
+</head>
+</head>
+<body>
+<table>
+<?php
+
+	$sql = 	"SELECT ".
+			"item_name,".
+			"id ".
+			"FROM ".
+			"guild_item_list";
+
+	$result = $mysqli -> query($sql);
+
+	foreach($result as $row){
+		echo "<tr id='".$row["id"]."'>\n";
+			echo "<td><input type='checkbox' class='check'></td>\n";
+			echo "<td>".$row["item_name"]."</td>\n";
+			echo "<td>\n";
+				echo "<select>\n";
+					for($i=0; $i<count($character_name_array); $i++){
+						echo "<option value='".$character_name_array[$i]."'>".$character_name_array[$i]."\n";
+					}
+				echo "</select>\n";
+			echo "</td>\n";
+			echo "<td><input type='text' class='number' pattern='^[0-9]+$' required>個</td>\n";
+		echo "</tr>\n";
+	}
+	$result -> close();
+	$mysqli -> close();
+
+?>
+</table>
+<button type="button" value="apply" id="apply">適応</button>
+<button type="button" value="apply" id="rt_top">トップに戻る</button>
+</body>
+</html>

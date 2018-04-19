@@ -1,0 +1,61 @@
+<?php
+	$username = $_COOKIE["username"];
+?>
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<meta http-equiv="content-style-type" content="text/css">
+<meta name="robots" content="noindex, nofollow">
+<link rel="stylesheet" href="table_conf.css" type="text/css" media="screen">
+<script type="text/javascript" src="./jquery-3.1.1.min.js"></script>
+<script type="text/javascript" src="item_set.js"></script>
+<title>アイテム登録</title>
+</head>
+<body>
+<?php
+	echo '<div><a href="javascript:void(0)">'.$username.'</a></div>';
+?>
+
+<div>
+<h1>ギルドアイテム登録</h1>
+<p>[ギルド]は入力しなくてよいです</p>
+<p>購入できないものは、買値を空欄にしてください</p>
+
+<p><label>アイテム名：</label><input type="text" id ="item_name"></p>
+<p><label>価格(買値)：</label><input type="text" id="buy"></p>
+<p><label>価格(売値)：</label><input type="text" id="sale"></p>
+<p><label>店売り不可：</label><input type="checkbox" id="salable"></p>
+
+<p id="make">
+	<label>
+		<input type="radio" class="material" name="material" value="able">製作可
+		<input type="radio" class="material" name="material" value="disable" checked="checked">製作不可
+	</label>
+</p>
+<div id="material" class="1">
+	<p id="material_1">
+		<label>材料1：</label>
+		<input type="text">個数：
+		<select>
+			<?php
+				for($i=1; $i<=100; $i++){
+					echo "<option value=".$i.">".$i;
+					if($i%10 == 0){
+						$i += 9;
+					}
+				}
+			?>
+		</select>
+	</p>
+	<button type="button" value="add" id="add">追加</button>
+</div>
+<p>
+	<button type="button" value="apply" id="apply">登録</button>
+
+	<a href="javascript:void(0)" id="back">戻る</a>
+</p>
+</div>
+
+</body>
+</html>

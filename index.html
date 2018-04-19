@@ -1,0 +1,110 @@
+<?php
+	if(!isset($_COOKIE["username"])){
+		header('Location: http://www.wolfnet-twei.sakura.ne.jp/guild/login.html');
+		exit;
+	}else{
+		$username = $_COOKIE["username"];
+		$autorizations = $_COOKIE["authorizations"];
+	}
+?>
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>トップ</title>
+<meta http-equiv="content-style-type" content="text/css">
+<meta name="robots" content="noindex, nofollow">
+<link rel="stylesheet" href="table_conf.css" type="text/css" media="screen">
+<script type="text/javascript" src="./jquery-3.1.1.min.js"></script>
+<script type="text/javascript" src="index.js"></script>
+</head>
+<body>
+<div>
+<h1>ギルド資産管理・加工(全体)</h1>
+<div class="mypage">
+	<a href="javascript:void(0)">マイページ</a>
+</div><br>
+<table>
+	<tr>
+		<th>アイテム名</th><th>全体数</th><th>倉庫内</th><th>個人所有</th>
+	</tr>
+<?php
+	require_once("./conection.php");
+	$mysqli = db_connect();
+
+	$sql = 	"SELECT ".
+			"guild_item_list.item_name AS item_name,".
+			"guild_item_whole.number AS whole_number,".
+			"ifnull(pos1.number,'0') AS warehouse_number,".
+			"ifnull(pos2.number,'0') AS own ".
+			"FROM ".
+			"(".
+				"(".
+					"guild_item_list ".
+
+					"INNER JOIN ".
+					"guild_item_whole ".
+					"ON ".
+					"guild_item_list.item_name = guild_item_whole.item_name ".
+				") ".
+				"LEFT JOIN ".
+				"( ".
+					"SELECT pos.item_name AS item_name, ".
+					"pos.number AS number ".
+					"FROM guild_item_pos pos ".
+					"WHERE pos.character_name = '倉庫' ".
+				") pos1 ".
+
+
+				"ON ".
+				"guild_item_list.item_name = pos1.item_name ".
+			") ".
+
+			"LEFT JOIN ".
+
+
+			"( ".
+				"SELECT pos.item_name AS item_name,".
+				"sum(pos.number) AS number ".
+				"FROM guild_item_pos pos ".
+				"WHERE pos.character_name <> '倉庫' ".
+				 "GROUP BY item_name ".
+			") pos2 ".
+
+			"ON ".
+			"guild_item_list.item_name = pos2.item_name";
+
+	$result = $mysqli -> query($sql);
+
+
+
+	foreach($result as $row){
+		echo "<tr>";
+		echo '<td><a href="javascript:void(0)" class="item_name" name="'.$row["item_name"].'">'.$row["item_name"].'</a></td>';
+		echo '<td>'.$row["whole_number"].'</td>';
+		echo '<td>'.$row["warehouse_number"].'</td>';
+		echo '<td>'.$row["own"].'</td>';
+		echo "</tr>";
+	}
+
+?>
+
+
+</table>
+</div>
+<div>
+	<p>
+		<button type="button" id="item_set" value="item_set">アイテム登録</button>
+		<?php
+			if($autorizations > 0){
+				echo '<button type="button" id="number_set_guild" value="number_set_guild">所在登録(ギルド)</button>';
+
+			}else{
+				echo '<button type="button" id="number_set_guild" value="number_set_guild" disabled="disabled">所在登録(ギルド)</button>';
+			}
+		?>
+		<button type="button" id="number_set" value="number_set">所在登録</button>
+	</p>
+</div>
+</body>
+</html>

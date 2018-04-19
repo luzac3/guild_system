@@ -1,0 +1,70 @@
+<?php
+	if(isset($_COOKIE["username"])){
+		$username = $_COOKIE["username"];
+		$autorizations = $_COOKIE["authorizations"];
+	}else{
+		header('Location: http://www.wolfnet-twei.sakura.ne.jp/guild/login.html');
+		exit;
+	}
+
+	require_once("./conection.php");
+	$mysqli = db_connect();
+/*
+	$sql = 	"SELECT * FROM home_name_table WHERE user_name = '".$username."'";
+
+	$result = $mysqli -> query($sql);
+
+	if(($result-> num_rows) == 0){
+		header('Location: http://localhost/guild_system/home_name_conf.html');
+		exit;
+	}
+*/
+	$sql = 	"SELECT * FROM character_table WHERE user_name = '".$username."'";
+
+	$result = $mysqli -> query($sql);
+
+	if(($result-> num_rows) == 0){
+		header('Location: http://www.wolfnet-twei.sakura.ne.jp/guild/home_name_conf.html');
+		$result -> close();
+		$mysqli -> close();
+		exit;
+	}
+?>
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>マイページ</title>
+<meta http-equiv="content-style-type" content="text/css">
+<meta name="robots" content="noindex, nofollow">
+<link rel="stylesheet" href="table_conf.css" type="text/css" media="screen">
+<script type="text/javascript" src="./jquery-3.1.1.min.js"></script>
+<script type="text/javascript" src="mypage.js"></script>
+</head>
+<body>
+	<?php
+
+
+		$status = $result->fetch_assoc();
+
+		echo "<table>\n";
+
+		echo "<tr><td>家門</td>\n";
+		echo "<td>".$status["home_name"]."</td></tr>\n";
+		echo "<tr><td>キャラクター</td>\n";
+		echo "<td>".$status["name"]."</td></tr>\n";
+/*
+		echo "<tr><td>キャラクター名</td>\n";
+		echo "<td>\n";
+		foreach($character_list as $key=>$val){
+			echo "<p><a href='javascript:void(0)' id='".$key."'>".$key."</a></p>\n";
+		}
+		echo "</td></tr>\n";
+*/
+		echo "</table>\n";
+	?>
+
+	<button type="button" value="char_add" id="char_add">キャラクター追加</button>
+	<button type="button" value="st_edit">ステータス編集</button>
+</body>
+</html>

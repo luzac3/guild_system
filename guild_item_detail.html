@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<meta http-equiv="content-style-type" content="text/css">
+<meta name="robots" content="noindex, nofollow">
+<link rel="stylesheet" href="table_conf.css" type="text/css" media="screen">
+<script type="text/javascript" src="./jquery-3.1.1.min.js"></script>
+<title>Insert title here</title>
+</head>
+<body>
+<div>
+	<table>
+		<?php
+
+			$item_name = urldecode($_GET["item_name"]);
+
+			require_once("./conection.php");
+			$mysqli = db_connect();
+
+			$sql = 	"SELECT ".
+					"guild_item_list.item_name AS item_name,".
+					"guild_item_list.price AS price,".
+					"guild_item_list.price_sale AS price_sale,".
+					"guild_item_list.salable AS salable,".
+					"ifnull(guild_item_list.material,'0') AS material,".
+					"guild_item_whole.number AS whole_number,".
+					"guild_item_pos.number AS number,".
+					"guild_item_pos.character_name AS character_name ".
+					//"guild_item_pos.home_name AS warehouse_number,".
+
+					"FROM ".
+					"( ".
+						"guild_item_pos ".
+
+						"INNER JOIN ".
+						"guild_item_list ".
+						"ON ".
+						"guild_item_pos.item_name = guild_item_list.item_name ".
+					") ".
+
+					"LEFT JOIN ".
+					"guild_item_whole ".
+					"ON ".
+					"guild_item_pos.item_name = guild_item_whole.item_name ".
+
+					"WHERE ".
+					"guild_item_pos.item_name = '".$item_name."'";
+
+			$result = $mysqli -> query($sql);
+
+			if(($result -> num_rows)==0){
+				echo ("未保有、もしくはデータが未登録です");
+			}
+
+			$flag = 0;
+			$str1 = "";
+			$str2 = "";
+			$str3 = "";
+
+			foreach($result as $row){
+				if($flag == 0){
+					$str1 .=  "<tr>\n";
+					$str1 .= "<td>名称</td>\n";
+					$str1 .= "<td>".$row["item_name"]."</td></tr>\n";
+
+
+					$str1 .= "<tr>\n";
+					$str1 .= "<td>値段</td>\n";
+					$str1 .= "<td><p>買値：".$row["price"]."</p>\n";
+					if($row["salable"]){
+						$str1 .= "<p>売値：".$row["price_sale"]."</p>\n";
+					}else{
+						$str1 .= "<p class='red'>売値：".$row["price_sale"]."(販売不可)</p>\n";
+					}
+					$str1 .= "</td></tr>\n";
+
+					$str1 .= "<tr><td>所在</td>\n";
+
+					$str1 .="<td>";
+
+					$flag++;
+				}
+
+				$str2 .= "<p class='own'>\n".
+					"<label>".$row["character_name"]."</label>\n".
+					"<label>:</label>\n".
+					"<label>".$row["number"]."</label>\n".
+					"</p>\n";
+
+				if($flag == 1){
+					$str3 .= "<tr>\n";
+					$str3 .= "<td>製作材料</td>\n";
+					$str3 .= "<td>\n";
+					if($row["character_name"]==0){
+						$str3 .= "<p>製作不可</p>\n";
+					}else{
+						$array = JSON_decode($row["material"]);
+						foreach($array as $key => $val){
+							$str3 .= "<p class='material'>\n".
+								"<label>".$key."</label>\n".
+								"<label>×</label>\n".
+								"<label>".$val."</label>\n".
+								"</p>\n";
+						}
+					}
+					$str3 .= "</td></tr>\n";
+					$flag++;
+				}
+			}
+			$str2 .= "</td></tr>\n";
+			echo $str1.$str2.$str3;
+
+		?>
+	</table>
+</div>
+</body>
+</html>
